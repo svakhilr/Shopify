@@ -1,0 +1,43 @@
+.checkout-table{
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+.product-info{
+    display: flex;
+}
+
+.amount{
+    display: flex;
+}
+
+
+.gradient-custom {
+    /* fallback for old browsers */
+    background: #cd9cf2;
+    
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to top left, rgba(205, 156, 242, 1), rgba(246, 243, 255, 1));
+    
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to top left, rgba(205, 156, 242, 1), rgba(246, 243, 255, 1))
+    }
+
+.signup{
+    display: flex; 
+    margin-left: auto; 
+    margin-right: auto; 
+    background-color:#6369c3;
+    border:none;
+
+}
+
+.signup:hover {
+    background-color: darkred;
+    transition: 0.2s;
+  }
+
+.error-section{
+    text-align:center;
+}

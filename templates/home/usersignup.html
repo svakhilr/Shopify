@@ -1,0 +1,65 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+
+{% block content%}
+
+<section class="gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-8 col-xl-8">
+                <div class="card" style="border-radius: 10px;">
+                    <div class="card-header px-4 py-5">
+                        <h5 class=" mb-0" style="color: #a8729a;">WELCOME</h5>
+                    </div>
+                    <section class="container mt-4">
+                        <div class="main-agileinfo">
+                            <div class="agileits-top">
+                                <form action="{% url 'usersignup'%}" method="post">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+                                        <div class="col form-group">
+                                            <label>First name</label>
+                                            {{form.first_name}}
+                                        </div>
+                                        <div class="col form-group">
+                                            <label>Last name</label>
+                                            {{form.last_name}}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        {{form.email}}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone number</label>
+                                        {{form.phone_number}}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        {{form.password}}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Repeat Password</label>
+                                        {{form.password2}}
+                                    </div>
+                                    <input type="submit" id="signup" class="btn btn-primary btn-lg signup" value="SIGNUP" >
+
+                                </form>
+                                <p>Don't have an Account? <a href="{% url 'login' %}"> Login Now!</a></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="card-footer border-0 px-4 py-5"
+                        style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                        <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">
+                            Happy Shopping</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

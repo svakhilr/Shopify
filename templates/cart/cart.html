@@ -1,0 +1,290 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block content%}
+
+{% if not cartitems %}
+
+<div class="text-center mt-5 mb-5">
+    <img src="{% static 'images/cart-empty.png' %}" class="img-fluid rounded">
+    <h1 class="text-danger fw-bolder mt-4"> CART EMPTY !</h1>
+    
+    <a href="{% url 'store-page' %}" class="btn btn-success btn-lg mt-4 mb-4"> <span class="text">Continue Shopping</span>  </a>
+
+  </div>
+
+{% else %}
+<form class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+                <div class="m-l-25 m-r--38 m-lr-0-xl">
+                    <div class="wrap-table-shopping-cart">
+                        <table class="table-shopping-cart">
+                            <tr class="table_head">
+                                <th class="column-1">Product</th>
+                                <th class="column-2"></th>
+                                <th class="column-3">Price</th>
+                                <th class="column-4">Quantity</th>
+                                <th class="column-5">Total</th>
+                                <th class="column-3">Remove</th>
+                            </tr>
+                          
+                         {% for cartitem in cartitems %}
+                            <tr class="table_row product-data">
+                                <td class="column-1">
+                                    <div class="how-itemcart1">
+                                        <img src="{{cartitem.product.images.url}}" alt="IMG">
+                                    </div>
+                                </td>
+                                <td class="column-2">{{cartitem.product.product_name}} <br> {{ cartitem.variation.variation_category| capfirst}}:{{ cartitem.variation.variation_value| capfirst}} </td>
+                                <td class="column-3">₹ {{cartitem.product.price}}</td>
+                                <td class="column-4">
+                                    <input type="hidden"  class="prod-id" value="{{cartitem.id}}">
+                                    {% csrf_token %}
+                                    <div class="wrap-num-product flex-w m-l-auto m-r-0">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m updateqty" data-action="sub">
+                                            <i class="fs-16 zmdi zmdi-minus"></i>
+                                        </div>
+
+                                        <input class="mtext-104 cl3 txt-center num-product qty-input qty-value" value="{{cartitem.quantity}}">
+
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m  updateqty" data-action="add">
+                                            <i class="fs-16 zmdi zmdi-plus"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="column-5" ">₹ <strong id="sub_total-{{ cartitem.id }}">{{cartitem.get_total}}</strong></td>
+                                
+                                <td> <a href="{% url 'removeitem' cartitem.id %}"  onclick="return confirm('Are yoy sure to delete this item')"  class="cl8 trans-04 flex-c-m removeitem"><i class="fs-16 zmdi zmdi-close"></i></a></td>
+                            </tr>
+                         {% endfor %}
+                            
+                        </table>
+                    </div>
+
+                    <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
+                        <div class="flex-w flex-m m-r-20 m-tb-5">
+                            <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" id="coupon" type="text" name="coupon" placeholder="Coupon Code">
+                                
+                            <div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="apply_coupon()">
+                                Apply coupon
+                            </div>
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
+                        <div class="accordion" id="accordionExample">
+                            <div class="accordion-item">
+                              <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                  Available Coupons
+                                </button>
+                              </h2>
+                              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-hover">
+                                        <thead>
+                                          <tr>
+                                            
+                                            <th scope="col">Coupon Code</th>
+                                            <th scope="col">Discount Amount</th>
+                                            <th scope="col">Required Amount</th>
+                                            
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for coupon in coupons %}
+                                            <tr>
+                                            
+                                            <td class="table-warning">{{coupon.coupon_code}}</td>
+                                            <td class="table-warning">₹ {{coupon.discount_amt}}</td>
+                                            <td class="table-warning">₹ {{coupon.minimum_amt}}</td>
+                                          </tr>
+                                          {% endfor %}
+                                          
+                                        </tbody>
+                                      </table>
+                                </div>
+                              </div>
+                            </div>
+                            
+                           
+                          </div>
+
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">
+                        Cart Totals
+                    </h4>
+
+                    <div class="flex-w flex-t p-b-13">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">
+                                Subtotal:
+                            </span>
+                        </div>
+
+                        <div class="size-209">
+                            <span class="mtext-110 cl2">
+                                ₹ <strong id = "total">{{total}}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex-w flex-t p-b-13">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">
+                                Discount:
+                            </span>
+                        </div>
+
+                        <div class="size-209">
+                            <span class="mtext-110 cl2">
+                                ₹ <strong id = "discount">{{discount}}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex-w flex-t bor12 p-b-13">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">
+                                Tax:
+                            </span>
+                        </div>
+
+                        <div class="size-209">
+                            <span class="mtext-110 cl2">
+                                ₹ <strong id = "tax">{{tax}}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="flex-w flex-t p-t-27 p-b-33">
+                        <div class="size-208">
+                            <span class="mtext-101 cl2">
+                                Grand Total:
+                            </span>
+                        </div>
+
+                        <div class="size-209 p-t-1">
+                            <span class="mtext-110 cl2">
+                                ₹  <strong id = "grand-total"> {{grand_total}}</strong>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- <a href="#">
+                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+                            Proceed to Checkout
+                        </button>
+                    </a> -->
+                    <a href="{% url 'checkout'%}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"> Checkout </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endif %}
+<script>
+  
+  [...document.getElementsByClassName('updateqty')].forEach(function (e){
+    e.addEventListener('click', function(){
+        id = Number(this.getAttribute('value'))
+        var prod_id= $(this).closest('.product-data').find('.prod-id').val();
+        var token = $('input[name=csrfmiddlewaretoken]').val();
+        var quantity= $(this).closest('.product-data').find('.qty-value').val();
+        var action = this.dataset.action
+
+        
+        
+        console.log(prod_id)
+        console.log(token)
+        console.log(quantity)
+        console.log(action)
+
+        
+        $.ajax({
+            
+            url:'/cart/updatecart/',
+            method:'POST',
+            dataType: 'json',
+            data: {
+                "prod_id":prod_id,
+                "quantity":quantity,
+                "action":action,
+                
+                csrfmiddlewaretoken:token
+            },
+            success:(response) => {
+                console.log(response.total)
+                total=response.total
+                itemtotal= response.itemtotal
+                cartitem_id=response.cartitem_id
+                console.log(cartitem_id)
+                $("#sub_total-"+cartitem_id).text(itemtotal);
+                // $('#total').text(total)
+                document.getElementById('total').textContent = total
+                document.getElementById('tax').textContent = response.tax
+                document.getElementById('grand-total').textContent = response.grand_total
+                document.getElementById('discount').textContent = response.discount 
+           }
+        })
+    })
+})
+  
+function apply_coupon() {
+     console.log('ghfhg')
+      var coupon_code = document.getElementById('coupon').value
+      var grand_total = document.getElementById('grand-total').textContent
+      var token = $('input[name=csrfmiddlewaretoken]').val();
+      console.log(coupon_code)
+      console.log(grand_total)
+      console.log(token)
+      $.ajax({
+          url: '/cart/applycoupon/',
+          method: 'POST',
+          dataType: 'json',
+          data: {
+              coupon_code: coupon_code,
+              grand_total: grand_total,
+              csrfmiddlewaretoken: "{{csrf_token}}",
+          },
+          success: (response) => {
+              if (response.flag == 1) {
+                  swal("Sorry!", "Coupon already used!", "error");
+                  document.getElementById('discount').textContent = response.discount
+                  document.getElementById('grand-total').textContent = response.grand_total
+              }
+              else if (response.flag == 0){
+                  swal("Sorry!", "Invalid Coupon!", "error");
+                  console.log('invalid')
+                  console.log(grand_total)
+                  document.getElementById('discount').textContent = response.discount
+                  document.getElementById('grand-total').textContent = response.grand_total
+                  
+                  
+              }
+              else{
+                  console.log(response.amount_pay)
+                  swal("Congratulations!", "Coupon applied Successfully!", "success");
+                  document.getElementById('discount').textContent = response.discount
+                  document.getElementById('grand-total').textContent = response.grand_total
+              }
+              
+          }
+      })
+  }
+
+
+</script>
+
+{% endblock content%}

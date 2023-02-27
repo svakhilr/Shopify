@@ -1,0 +1,188 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+
+{% block content%}
+
+
+
+<!-- Content page -->
+<section class="bg0 p-t-104 p-b-116">
+    <div class="container">
+        <div class="flex-w flex-tr">
+            <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+                <div class="card text-white bg-secondary mb-3">
+                    <input type="hidden"  id="order-id" value="{{order.id}}">
+                        {% csrf_token %}
+
+                    <div class="card-body mt-4">
+                        <h3 class="card-title mb-4">Shipping Address</h3>
+                        <h4 class="card-title">Name: {{order.address.full_name}}</h4>
+                        <h5 class="card-text mb-3">Address: {{order.address.full_address}} </h5>
+                        <h5 class="card-text mb-3">City: {{order.address.city}}</h5>
+                        <h5 class="card-text mb-3">State: {{order.address.state}}</h5>
+                        <h5 class="card-text mb-3">Country: {{order.address.country}}</h5>
+                        <h4 class="card-title">Contact Number: {{order.address.phone_number}} </h4>
+                    </div>
+                </div>
+
+                <table class="table checkout-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in cartitems %}
+                      <tr>
+                        <td>
+                          <div class="product-info d-flex">
+                          <div class="aside">
+                          <img src="{{ item.product.images.url }}" class="img-sm" style="width: 50px;">
+                          </div>
+                          <figcaption style="margin-left: 10px;">
+                          {{item.product.product_name}} 
+                          <p class="text-muted small" style="text-align: start;">
+                          {{item.variation.variation_value}}
+                          </p></td>
+                          </figcaption>
+                         </div>
+                        <td>{{item.quantity}}</td>
+                        <td>
+                          <div> 
+                          <var class="price">₹ {{ item.get_total }}</var>
+                          <small class="text-muted" style="display: block;"> ₹ {{ item.product.price }} each </small>
+                        </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      
+                    </tbody>
+                  </table>
+            </div>
+
+            <div class="size-210 bor10 p-lr-10 p-t-70 p-b-70 p-lr-15-lg w-full-md">
+
+
+
+                <div class="amount" style="display: flex; justify-content: space-between; margin-top: 65px;">
+                    <h2>Amount</h2>
+                    <!-- <h4 class="coln" style="margin-left: 10px;">:</h4> -->
+                    <h2>₹ {{total}}</h2>
+
+                </div>
+
+                <div class="totalamount" style="display: flex; justify-content: space-between; margin-top: 25px;">
+                    <h2>Tax</h2>
+                    <!-- <h4 class="coln" style="margin-left: 10px;">:</h4> -->
+                    <h2>₹ {{tax}}</h2>
+
+                </div>
+
+
+
+
+
+                <div class="discount" style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <h2>Discount</h2>
+                    <!-- <h4 class="coln" style="margin-left: 10px;">:</h4> -->
+                    <h2 class="text-success b">-₹ {{discount}}</h2>
+
+                </div>
+
+                <div class="totalamount" style="display: flex; justify-content: space-between; margin-top: 25px;">
+                    <h2>Grand total</h2>
+                    <!-- <h4 class="coln" style="margin-left: 10px;">:</h4> -->
+                    <h2 class=" text-dark b">₹ {{order.grand_total}}</h2>
+
+                </div>
+
+                <a href="{% url 'cod' order.id %}"
+                    class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer  mt-5" style="background-color: rgb(9, 140, 40);"> Cash On
+                    Delivery </a>
+                
+                <!-- <button type="button" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer  mt-4" style="background-color: rgb(21, 151, 238);">razor pay</button> -->
+
+                <div id="paypal-button-container" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    paypal.Buttons({
+        style:{
+            'layouts':'vertical',
+            'shape':'pill'
+        },
+        
+      // Sets up the transaction when a payment button is clicked
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '0.1' // Can also reference a variable or function
+            }
+          }]
+        });
+      },
+      // Finalize the transaction after payer approval
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(function(orderData) {
+          // Successful capture! For dev/demo purposes:
+          //console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+          const transaction = orderData.purchase_units[0].payments.captures[0];
+        //   alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+          // When ready to go live, remove the alert and show a success message within this page. For example:
+          const element = document.getElementById('paypal-button-container');
+          
+          
+          element.innerHTML = '<h3>Thank you for your payment!</h3>';
+
+          
+          // Or go to another URL:  actions.redirect('thank_you.html');
+        //   var id = $("[name='address']").val();
+          var order = document.getElementById('order-id').value
+          var token =$("[name='csrfmiddlewaretoken']").val();
+        //   dataType: 'json',
+        //   data = {
+    
+        //     "order": order,
+        //     "transaction_id": transaction.id,
+        //     csrfmiddlewaretoken: token,
+        //   }
+          $.ajax({
+            url:'/orders/paypalpayment/',
+            method:'POST',
+            dataType: 'json',
+            data: {
+                "order":order,
+                "transaction_id":transaction.id,
+                
+                
+                csrfmiddlewaretoken:token
+            },
+            //
+            success: function (response) {
+                swal("Congratulations!",response.status,"success").then((value) => {
+                    window.location.href="/orders/invoice"
+                });
+            }
+          });
+        });
+      }
+    }).render('#paypal-button-container');
+</script>
+
+
+{% endblock content%}
+
+
+
+
+
+

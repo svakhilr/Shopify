@@ -1,0 +1,47 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+
+{% block content%}
+
+<section class="gradient-custom">
+	<div class="container py-5 h-100">
+		<div class="row d-flex justify-content-center align-items-center h-100">
+			<div class="col-lg-8 col-xl-8">
+				<div class="card" style="border-radius: 10px;">
+					<div class="card-header px-4 py-5">
+						<h5 class=" mb-0" style="color: #a8729a;">WELCOME</h5>
+					</div>
+					<div class="main-agileinfo container mt-4">
+						<div class="agileits-top container">
+							<form action="{% url 'login' %}" method="post">
+								{% csrf_token %}
+
+								<div class="form-group col-lg-9  " style="margin-left: auto; margin-right: auto;">
+									<label>Email</label>
+									<input type="email" class="form-control" placeholder="Email Address" name="email">
+								</div> <!-- form-group// -->
+								<div class="form-group col-lg-9" style="margin-left: auto; margin-right: auto;">
+									<label>Password</label>
+									<input type="password" class="form-control" placeholder="Password" name="password">
+								</div> <!-- form-group// -->
+
+								
+								<input type="submit" id="signup" class="btn btn-primary btn-lg signup" value="LOGIN">
+
+							</form>
+							<p>Don't have an Account? <a href="{% url 'usersignup'%}"> Register Now!</a></p>
+						</div>
+					</div>
+					<div class="card-footer border-0 px-4 py-5"
+						style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+						<h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">
+							Happy Shopping</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% endblock content %}
